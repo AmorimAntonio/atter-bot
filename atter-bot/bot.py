@@ -18,8 +18,8 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # ID da mensagem que terá as reações
 ROLE_MESSAGE_ID = 1379103469197066343  # substitua pelo ID real da mensagem
 EMOJI_ROLE_MAP = {
-    "🔥": 1379099812758163537,  # ID do cargo Fogo
-    "❄️": 1379099857834213506,  # ID do cargo Gelo
+    "🎲": 1379099857834213506,  # ID do cargo Fogo
+    "☕": 1379099812758163537,  # ID do cargo Gelo
 }
 
 @bot.event
@@ -28,9 +28,9 @@ async def on_ready():
 
 @bot.command()
 async def setup(ctx):
-    msg = await ctx.send("Reaja com 🔥 ou ❄️ para receber um cargo!")
-    await msg.add_reaction("🔥")
-    await msg.add_reaction("❄️")
+    msg = await ctx.send("Reaja para receber um cargo: 🎲 - Cientista de dados, ☕ - Estágiario")
+    await msg.add_reaction("🎲")
+    await msg.add_reaction("☕")
     print(f"ID da mensagem: {msg.id}")
 
 @bot.event
