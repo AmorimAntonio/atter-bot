@@ -16,7 +16,7 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ID da mensagem que terá as reações
-ROLE_MESSAGE_ID = 1379107027481002057  # substitua pelo ID real da mensagem
+ROLE_MESSAGE_ID = 1379108215450632347  # substitua pelo ID real da mensagem
 EMOJI_ROLE_MAP = {
     "🎲": 1365322123458908170,  # ID do cargo Fogo
     "☕": 1379099812758163537,  # ID do cargo Gelo
