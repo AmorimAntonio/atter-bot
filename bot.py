@@ -28,16 +28,16 @@ AREA_ROLE_MESSAGE_ID = 1379789796158869526   # mensagem de área
 
 # função:
 LEVEL_EMOJI_ROLE_MAP = {
-    "🎓": 1341790379825037313,  # Senior
+    "🎓": 1379831905251233804,  # Senior
     "🛠️": 1379790093304332348,  # Pleno
-    "⚙️": 1341791151899938816,  # Junior
+    "⚙️": 1379832214099067101,  # Junior
     "☕": 1379790221968806098,  # Estagiário(a)
     "🌱": 1379790296518365226,  # Trainee
 }
 
 # área de atuação:
 AREA_EMOJI_ROLE_MAP = {
-    "🎲": 1372199350607806516,  # Engenharia de dados
+    "🎲": 1379832013682380810,  # Engenharia de dados
     "📊": 1379790435592966287,  # Analista de dados
     "🧪": 1379790497345962146,  # Cientista de dados
 }
