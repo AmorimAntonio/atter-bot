@@ -20,26 +20,26 @@ intents.guilds = True
 # definindo o prefixo do bot, nesse caso "!"
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# IDs das mensagens que possuem as reações
-AREA_ROLE_MESSAGE_ID = 123456789012345678  # ID da mensagem de área de atuação
-LEVEL_ROLE_MESSAGE_ID = 234567890123456789  # ID da mensagem de nível de experiência
+# IDs das mensagens (substitua após rodar !setup)
+LEVEL_ROLE_MESSAGE_ID = 1379782311092158514  # mensagem de função
+AREA_ROLE_MESSAGE_ID = 1379782305119211661   # mensagem de área
 
 # mapeando emojis para os cargos correspondentes
-
-# faixa de experiência:
-AREA_EMOJI_ROLE_MAP = {
-    "🎲": 1365322123458908170,  # Engenheiro de dados
-    "📊": 1379472452861689916,  # Analista de dados
-    "🧪": 1379099857834213506,  # Cientista de dados
-}
 
 # função:
 LEVEL_EMOJI_ROLE_MAP = {
     "🎓": 1379472505055608902,  # Senior
     "🛠️": 1379472556993548319,  # Pleno
     "⚙️": 1379472533346324541,  # Junior
-    "☕": 1379099812758163537,  # Estágiário
+    "☕": 1379099812758163537,  # Estagiário(a)
     "🌱": 1379472577663078582,  # Trainee
+}
+
+# área de atuação:
+AREA_EMOJI_ROLE_MAP = {
+    "🎲": 1365322123458908170,  # Engenharia de dados
+    "📊": 1379472452861689916,  # Analista de dados
+    "🧪": 1379099857834213506,  # Cientista de dados
 }
 
 @bot.event
@@ -48,20 +48,9 @@ async def on_ready():
 
 @bot.command()
 async def setup(ctx):  # quando o usuário digita "!setup"
-    # mensagem 1: áreas de atuação
-    area_msg = await ctx.send(
-        "Reaja para receber um cargo da empresa:\n"
-        "🎲 - Engenheiro de Dados\n"
-        "📊 - Analista de Dados\n"
-        "🧪 - Cientista de Dados"
-    )
-    for emoji in AREA_EMOJI_ROLE_MAP.keys():
-        await area_msg.add_reaction(emoji)
-    print(f"ID da mensagem de áreas: {area_msg.id}")
-
-    # mensagem 2: níveis de experiência
+    # mensagem 1: função
     level_msg = await ctx.send(
-        "Reaja para indicar seu nível de experiência:\n"
+        "Reaja para indicar seu nível de experiência:\n\n"
         "🎓 - Sênior\n"
         "🛠️ - Pleno\n"
         "⚙️ - Júnior\n"
@@ -70,11 +59,21 @@ async def setup(ctx):  # quando o usuário digita "!setup"
     )
     for emoji in LEVEL_EMOJI_ROLE_MAP.keys():
         await level_msg.add_reaction(emoji)
-    print(f"ID da mensagem de níveis: {level_msg.id}")
+    print(f"ID da mensagem de função: {level_msg.id}")
+
+    # mensagem 2: área de atuação
+    area_msg = await ctx.send(
+        "Reaja para receber um cargo:\n\n"
+        "🎲 - Engenharia de dados\n"
+        "📊 - Analista de dados\n"
+        "🧪 - Cientista de dados"
+    )
+    for emoji in AREA_EMOJI_ROLE_MAP.keys():
+        await area_msg.add_reaction(emoji)
+    print(f"ID da mensagem de área: {area_msg.id}")
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    # ignorando reações que não são das mensagens alvo ou do próprio bot
     if payload.user_id == bot.user.id:
         return
 
@@ -82,24 +81,27 @@ async def on_raw_reaction_add(payload):
     if not guild:
         return
 
-    role_id = None
-    if payload.message_id == AREA_ROLE_MESSAGE_ID:
-        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == LEVEL_ROLE_MESSAGE_ID:
+    # detectando qual mensagem foi reagida
+    if payload.message_id == LEVEL_ROLE_MESSAGE_ID:
         role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
+    elif payload.message_id == AREA_ROLE_MESSAGE_ID:
+        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
+    else:
+        return
 
     if not role_id:
         return
 
+    # pegando o cargo correspondente
     member = guild.get_member(payload.user_id)
     if member:
         role = guild.get_role(role_id)
         if role:
-            await member.add_roles(role)  # adicionando o cargo
+            await member.add_roles(role)
             print(f"Adicionado {role.name} para {member.display_name}")
 
 @bot.event
-async def on_raw_reaction_remove(payload):  # assim como o anterior
+async def on_raw_reaction_remove(payload):
     if payload.user_id == bot.user.id:
         return
 
@@ -107,11 +109,13 @@ async def on_raw_reaction_remove(payload):  # assim como o anterior
     if not guild:
         return
 
-    role_id = None
-    if payload.message_id == AREA_ROLE_MESSAGE_ID:
-        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == LEVEL_ROLE_MESSAGE_ID:
+    # detectando qual mensagem teve a reação removida
+    if payload.message_id == LEVEL_ROLE_MESSAGE_ID:
         role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
+    elif payload.message_id == AREA_ROLE_MESSAGE_ID:
+        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
+    else:
+        return
 
     if not role_id:
         return
