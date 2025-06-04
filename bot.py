@@ -21,8 +21,8 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # IDs das mensagens (substitua após rodar !setup)
-LEVEL_ROLE_MESSAGE_ID = 1379782311092158514  # mensagem de função
-AREA_ROLE_MESSAGE_ID = 1379782305119211661   # mensagem de área
+LEVEL_ROLE_MESSAGE_ID = 1379784232041185324  # mensagem de função
+AREA_ROLE_MESSAGE_ID = 1379784226593046599   # mensagem de área
 
 # mapeando emojis para os cargos correspondentes
 
