@@ -21,25 +21,25 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # IDs das mensagens (substitua após rodar !setup)
-LEVEL_ROLE_MESSAGE_ID = 1379784232041185324  # mensagem de função
-AREA_ROLE_MESSAGE_ID = 1379784226593046599   # mensagem de área
+LEVEL_ROLE_MESSAGE_ID = 1379789786528747551  # mensagem de função
+AREA_ROLE_MESSAGE_ID = 1379789796158869526   # mensagem de área
 
 # mapeando emojis para os cargos correspondentes
 
 # função:
 LEVEL_EMOJI_ROLE_MAP = {
-    "🎓": 1379472505055608902,  # Senior
-    "🛠️": 1379472556993548319,  # Pleno
-    "⚙️": 1379472533346324541,  # Junior
-    "☕": 1379099812758163537,  # Estagiário(a)
-    "🌱": 1379472577663078582,  # Trainee
+    "🎓": 1341790379825037313,  # Senior
+    "🛠️": 1379790093304332348,  # Pleno
+    "⚙️": 1341791151899938816,  # Junior
+    "☕": 1379790221968806098,  # Estagiário(a)
+    "🌱": 1379790296518365226,  # Trainee
 }
 
 # área de atuação:
 AREA_EMOJI_ROLE_MAP = {
-    "🎲": 1365322123458908170,  # Engenharia de dados
-    "📊": 1379472452861689916,  # Analista de dados
-    "🧪": 1379099857834213506,  # Cientista de dados
+    "🎲": 1372199350607806516,  # Engenharia de dados
+    "📊": 1379790435592966287,  # Analista de dados
+    "🧪": 1379790497345962146,  # Cientista de dados
 }
 
 @bot.event
