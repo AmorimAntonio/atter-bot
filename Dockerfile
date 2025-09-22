@@ -29,5 +29,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD curl -fsS http://127.0.0.1:8080/ || exit 1
 
 # Rode seu bot
-# Troque "main.py" pelo nome correto do arquivo principal (parece que é "main")
-CMD ["python", "-u", "main.py"]
+CMD ["python", "-u", "bot.py"]
