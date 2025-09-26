@@ -85,6 +85,7 @@ async def setup(ctx):
 async def on_raw_reaction_add(payload):
     print("🟡 Evento de reação detectado")
     print(f"Mensagem: {payload.message_id} | Emoji: {payload.emoji.name}")
+
     if payload.user_id == bot.user.id:
         return
 
@@ -92,26 +93,32 @@ async def on_raw_reaction_add(payload):
     if not guild:
         return
 
-    # detectando qual mensagem foi reagida
     level_id, area_id = carregar_ids()
-    if payload.message_id == level_id:
-        role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == area_id:
-        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
 
+    if payload.message_id == level_id:
+        role_id = LEVEL_EMOJI_ROLE_MAP.get(payload.emoji.name)
+    elif payload.message_id == area_id:
+        role_id = AREA_EMOJI_ROLE_MAP.get(payload.emoji.name)
     else:
         return
 
     if not role_id:
+        print("⚠️ Emoji não mapeado para cargo.")
         return
 
-    # pegando o cargo correspondente
-    member = guild.get_member(payload.user_id)
-    if member:
+    try:
+        member = await guild.fetch_member(payload.user_id)
         role = guild.get_role(role_id)
-        if role:
+
+        if member and role:
+            print(f"Tentando atribuir cargo: {role.name} para {member.display_name}")
             await member.add_roles(role)
-            print(f"Adicionado {role.name} para {member.display_name}")
+            print(f"✅ Cargo {role.name} atribuído a {member.display_name}")
+        else:
+            print("⚠️ Membro ou cargo não encontrado.")
+
+    except Exception as e:
+        print(f"❌ Erro ao adicionar cargo: {e}")
 
 @bot.event
 async def on_raw_reaction_remove(payload):
