@@ -43,19 +43,18 @@ LEVEL_ROLE_MESSAGE_ID, AREA_ROLE_MESSAGE_ID = carregar_ids()
 
 # função:
 LEVEL_EMOJI_ROLE_MAP = {
-    str("🎓"): 1379831905251233804,
-    str("🛠️"): 1379790093304332348,
-    str("⚙️"): 1379832214099067101,
-    str("☕"): 1379790221968806098,
-    str("🌱"): 1379790296518365226,
+    "🎓": 1379831905251233804,  # Senior
+    "🛠️": 1379790093304332348,  # Pleno
+    "⚙️": 1379832214099067101,  # Junior
+    "☕": 1379790221968806098,  # Estagiário(a)
+    "🌱": 1379790296518365226,  # Trainee
 }
-
 
 # área de atuação:
 AREA_EMOJI_ROLE_MAP = {
-    str("🎲"): 1379832013682380810,  # Engenharia de dados
-    str("📊"): 1379790435592966287,  # Analista de dados
-    str("🧪"): 1379790497345962146,  # Cientista de dados
+    "🎲": 1379832013682380810,  # Engenharia de dados
+    "📊": 1379790435592966287,  # Analista de dados
+    "🧪": 1379790497345962146,  # Cientista de dados
 }
 
 @bot.event
@@ -85,12 +84,7 @@ async def setup(ctx):
 @bot.event
 async def on_raw_reaction_add(payload):
     print("🟡 Evento de reação detectado")
-    print(f"Mensagem: {payload.message_id} | Emoji: {payload.emoji}")
-    print(f"emoji.name: {payload.emoji.name}, str: {str(payload.emoji)}, id: {getattr(payload.emoji, 'id', None)}")
-    print(f"emoji.name: {payload.emoji.name}")
-    print(f"emoji str : {str(payload.emoji)}")
-
-
+    print(f"Mensagem: {payload.message_id} | Emoji: {payload.emoji.name}")
     if payload.user_id == bot.user.id:
         return
 
@@ -98,32 +92,26 @@ async def on_raw_reaction_add(payload):
     if not guild:
         return
 
+    # detectando qual mensagem foi reagida
     level_id, area_id = carregar_ids()
-
     if payload.message_id == level_id:
-        role_id = LEVEL_EMOJI_ROLE_MAP.get(payload.emoji.name)
+        role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
     elif payload.message_id == area_id:
-        role_id = AREA_EMOJI_ROLE_MAP.get(payload.emoji.name)
+        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
+
     else:
         return
 
     if not role_id:
-        print("⚠️ Emoji não mapeado para cargo.")
         return
 
-    try:
-        member = await guild.fetch_member(payload.user_id)
+    # pegando o cargo correspondente
+    member = guild.get_member(payload.user_id)
+    if member:
         role = guild.get_role(role_id)
-
-        if member and role:
-            print(f"Tentando atribuir cargo: {role.name} para {member.display_name}")
+        if role:
             await member.add_roles(role)
-            print(f"✅ Cargo {role.name} atribuído a {member.display_name}")
-        else:
-            print("⚠️ Membro ou cargo não encontrado.")
-    except Exception as e:
-        print(f"❌ Erro ao adicionar cargo: {e}")
-
+            print(f"Adicionado {role.name} para {member.display_name}")
 
 @bot.event
 async def on_raw_reaction_remove(payload):
@@ -137,9 +125,9 @@ async def on_raw_reaction_remove(payload):
     # detectando qual mensagem teve a reação removida
     level_id, area_id = carregar_ids()
     if payload.message_id == level_id:
-        role_id = LEVEL_EMOJI_ROLE_MAP.get(payload.emoji.name)
+        role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
     elif payload.message_id == area_id:
-        role_id = AREA_EMOJI_ROLE_MAP.get(payload.emoji.name)
+        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
     else:
         return
 
