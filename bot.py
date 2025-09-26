@@ -3,12 +3,9 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from keep_alive import keep_alive
-
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")  # pegando o token do .env
 
-keep_alive()  # manter o bot ativo
 
 # definindo as permissões do bot
 intents = discord.Intents.default()
