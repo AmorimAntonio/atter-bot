@@ -83,6 +83,8 @@ async def setup(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
+    print("🟡 Evento de reação detectado")
+    print(f"Mensagem: {payload.message_id} | Emoji: {payload.emoji.name}")
     if payload.user_id == bot.user.id:
         return
 
@@ -91,10 +93,12 @@ async def on_raw_reaction_add(payload):
         return
 
     # detectando qual mensagem foi reagida
-    if payload.message_id == LEVEL_ROLE_MESSAGE_ID:
+    level_id, area_id = carregar_ids()
+    if payload.message_id == level_id:
         role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == AREA_ROLE_MESSAGE_ID:
+    elif payload.message_id == area_id:
         role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
+
     else:
         return
 
@@ -119,9 +123,10 @@ async def on_raw_reaction_remove(payload):
         return
 
     # detectando qual mensagem teve a reação removida
-    if payload.message_id == LEVEL_ROLE_MESSAGE_ID:
+    level_id, area_id = carregar_ids()
+    if payload.message_id == level_id:
         role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == AREA_ROLE_MESSAGE_ID:
+    elif payload.message_id == area_id:
         role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
     else:
         return
@@ -135,12 +140,5 @@ async def on_raw_reaction_remove(payload):
         if role:
             await member.remove_roles(role)
             print(f"Removido {role.name} de {member.display_name}")
-
-def carregar_ids():
-    with open(CONFIG_FILE, "r") as f:
-        dados = json.load(f)
-        return dados.get("level_message_id"), dados.get("area_message_id")
-
-
 
 bot.run(TOKEN)
