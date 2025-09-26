@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")  # pegando o token do .env
@@ -17,9 +18,8 @@ intents.guilds = True
 # definindo o prefixo do bot, nesse caso "!"
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# IDs das mensagens (substitua após rodar !setup)
-LEVEL_ROLE_MESSAGE_ID = 1379789786528747551  # mensagem de função
-AREA_ROLE_MESSAGE_ID = 1379789796158869526   # mensagem de área
+# IDs das mensagens (funcionando de forma dinâmica)
+LEVEL_ROLE_MESSAGE_ID, AREA_ROLE_MESSAGE_ID = carregar_ids()
 
 # mapeando emojis para os cargos correspondentes
 
@@ -43,31 +43,25 @@ AREA_EMOJI_ROLE_MAP = {
 async def on_ready():
     print(f"Bot conectado como {bot.user}")  # printando no log quando o bot fica online 
 
-@bot.command()
-async def setup(ctx):  # quando o usuário digita "!setup"
-    # mensagem 1: função
-    level_msg = await ctx.send(
-        "Reaja para indicar seu nível de experiência:\n\n"
-        "🎓 - Sênior\n"
-        "🛠️ - Pleno\n"
-        "⚙️ - Júnior\n"
-        "☕ - Estagiário(a)\n"
-        "🌱 - Trainee"
-    )
-    for emoji in LEVEL_EMOJI_ROLE_MAP.keys():
-        await level_msg.add_reaction(emoji)
-    print(f"ID da mensagem de função: {level_msg.id}")
 
-    # mensagem 2: área de atuação
-    area_msg = await ctx.send(
-        "Reaja para receber um cargo:\n\n"
-        "🎲 - Engenharia de dados\n"
-        "📊 - Analista de dados\n"
-        "🧪 - Cientista de dados"
-    )
-    for emoji in AREA_EMOJI_ROLE_MAP.keys():
+@bot.command()
+async def setup(ctx):
+    # Envia mensagens
+    level_msg = await ctx.send("Reaja para indicar seu nível de experiência:\n\n..."
+                               "🎓 - Sênior\n🛠️ - Pleno\n⚙️ - Júnior\n☕ - Estagiário(a)\n🌱 - Trainee")
+    for emoji in LEVEL_EMOJI_ROLE_MAP:
+        await level_msg.add_reaction(emoji)
+
+    area_msg = await ctx.send("Reaja para sua área de atuação:\n\n..."
+                              "🎲 - Engenharia de dados\n📊 - Analista de dados\n🧪 - Cientista de dados")
+    for emoji in AREA_EMOJI_ROLE_MAP:
         await area_msg.add_reaction(emoji)
-    print(f"ID da mensagem de área: {area_msg.id}")
+
+    # Salva os IDs dinamicamente
+    salvar_ids(level_msg.id, area_msg.id)
+
+    print(f"IDs salvos: função={level_msg.id}, área={area_msg.id}")
+
 
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -123,5 +117,18 @@ async def on_raw_reaction_remove(payload):
         if role:
             await member.remove_roles(role)
             print(f"Removido {role.name} de {member.display_name}")
+
+def carregar_ids():
+    with open(CONFIG_FILE, "r") as f:
+        dados = json.load(f)
+        return dados.get("level_message_id"), dados.get("area_message_id")
+
+CONFIG_FILE = "config.json"
+def salvar_ids(level_id, area_id):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump({
+            "level_message_id": level_id,
+            "area_message_id": area_id
+        }, f)
 
 bot.run(TOKEN)
