@@ -18,6 +18,13 @@ def carregar_ids():
     except FileNotFoundError:
         return None, None
 
+def salvar_ids(level_id, area_id):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump({
+            "level_message_id": level_id,
+            "area_message_id": area_id
+        }, f)
+
 
 # definindo as permissões do bot
 intents = discord.Intents.default()
@@ -69,7 +76,7 @@ async def setup(ctx):
         await area_msg.add_reaction(emoji)
 
     # Salva os IDs dinamicamente
-    carregar_ids(level_msg.id, area_msg.id)
+    salvar_ids(level_msg.id, area_msg.id)
 
     print(f"IDs salvos: função={level_msg.id}, área={area_msg.id}")
 
