@@ -69,7 +69,7 @@ async def setup(ctx):
         await area_msg.add_reaction(emoji)
 
     # Salva os IDs dinamicamente
-    salvar_ids(level_msg.id, area_msg.id)
+    carregar_ids(level_msg.id, area_msg.id)
 
     print(f"IDs salvos: função={level_msg.id}, área={area_msg.id}")
 
