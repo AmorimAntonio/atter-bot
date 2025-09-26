@@ -87,6 +87,9 @@ async def on_raw_reaction_add(payload):
     print("🟡 Evento de reação detectado")
     print(f"Mensagem: {payload.message_id} | Emoji: {payload.emoji}")
     print(f"emoji.name: {payload.emoji.name}, str: {str(payload.emoji)}, id: {getattr(payload.emoji, 'id', None)}")
+    print(f"emoji.name: {payload.emoji.name}")
+    print(f"emoji str : {str(payload.emoji)}")
+
 
     if payload.user_id == bot.user.id:
         return
@@ -98,9 +101,9 @@ async def on_raw_reaction_add(payload):
     level_id, area_id = carregar_ids()
 
     if payload.message_id == level_id:
-        role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
+        role_id = LEVEL_EMOJI_ROLE_MAP.get(payload.emoji.name)
     elif payload.message_id == area_id:
-        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
+        role_id = AREA_EMOJI_ROLE_MAP.get(payload.emoji.name)
     else:
         return
 
@@ -134,9 +137,9 @@ async def on_raw_reaction_remove(payload):
     # detectando qual mensagem teve a reação removida
     level_id, area_id = carregar_ids()
     if payload.message_id == level_id:
-        role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
+        role_id = LEVEL_EMOJI_ROLE_MAP.get(payload.emoji.name)
     elif payload.message_id == area_id:
-        role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
+        role_id = AREA_EMOJI_ROLE_MAP.get(payload.emoji.name)
     else:
         return
 
