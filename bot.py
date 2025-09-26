@@ -7,6 +7,17 @@ import json
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")  # pegando o token do .env
 
+CONFIG_FILE = "config.json"
+
+# função para pegar os IDs do json
+def carregar_ids():
+    try:
+        with open(CONFIG_FILE, "r") as f:
+            dados = json.load(f)
+            return dados.get("level_message_id"), dados.get("area_message_id")
+    except FileNotFoundError:
+        return None, None
+
 
 # definindo as permissões do bot
 intents = discord.Intents.default()
@@ -123,12 +134,6 @@ def carregar_ids():
         dados = json.load(f)
         return dados.get("level_message_id"), dados.get("area_message_id")
 
-CONFIG_FILE = "config.json"
-def salvar_ids(level_id, area_id):
-    with open(CONFIG_FILE, "w") as f:
-        json.dump({
-            "level_message_id": level_id,
-            "area_message_id": area_id
-        }, f)
+
 
 bot.run(TOKEN)
