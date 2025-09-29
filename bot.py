@@ -21,8 +21,8 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # IDs das mensagens (substitua após rodar !setup)
-LEVEL_ROLE_MESSAGE_ID = 1421134569918173284  # mensagem de função
-AREA_ROLE_MESSAGE_ID = 1421134587752480811   # mensagem de área
+LEVEL_ROLE_MESSAGE_ID = 1379789786528747551  # mensagem de função
+AREA_ROLE_MESSAGE_ID = 1379789796158869526   # mensagem de área
 
 # mapeando emojis para os cargos correspondentes
 
@@ -48,6 +48,7 @@ async def on_ready():
 
 @bot.command()
 async def setup(ctx):  # quando o usuário digita "!setup"
+    print("🟡 setup")
     # mensagem 1: função
     level_msg = await ctx.send(
         "Reaja para indicar seu nível de experiência:\n\n"
@@ -74,6 +75,7 @@ async def setup(ctx):  # quando o usuário digita "!setup"
 
 @bot.event
 async def on_raw_reaction_add(payload):
+    print("🟡 adicionando cargos")
     if payload.user_id == bot.user.id:
         return
 
@@ -102,6 +104,7 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
+    print("🟡 removendo cargos")
     if payload.user_id == bot.user.id:
         return
 
