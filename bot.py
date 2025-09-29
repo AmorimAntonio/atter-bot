@@ -2,29 +2,13 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import json
+
+from keep_alive import keep_alive
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")  # pegando o token do .env
 
-CONFIG_FILE = "config.json"
-
-# função para pegar os IDs do json
-def carregar_ids():
-    try:
-        with open(CONFIG_FILE, "r") as f:
-            dados = json.load(f)
-            return dados.get("level_message_id"), dados.get("area_message_id")
-    except FileNotFoundError:
-        return None, None
-
-def salvar_ids(level_id, area_id):
-    with open(CONFIG_FILE, "w") as f:
-        json.dump({
-            "level_message_id": level_id,
-            "area_message_id": area_id
-        }, f)
-
+keep_alive()  # manter o bot ativo
 
 # definindo as permissões do bot
 intents = discord.Intents.default()
@@ -36,8 +20,9 @@ intents.guilds = True
 # definindo o prefixo do bot, nesse caso "!"
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# IDs das mensagens (funcionando de forma dinâmica)
-LEVEL_ROLE_MESSAGE_ID, AREA_ROLE_MESSAGE_ID = carregar_ids()
+# IDs das mensagens (substitua após rodar !setup)
+LEVEL_ROLE_MESSAGE_ID = 1421134569918173284  # mensagem de função
+AREA_ROLE_MESSAGE_ID = 1421134587752480811   # mensagem de área
 
 # mapeando emojis para os cargos correspondentes
 
@@ -61,30 +46,34 @@ AREA_EMOJI_ROLE_MAP = {
 async def on_ready():
     print(f"Bot conectado como {bot.user}")  # printando no log quando o bot fica online 
 
-
 @bot.command()
-async def setup(ctx):
-    # Envia mensagens
-    level_msg = await ctx.send("Reaja para indicar seu nível de experiência:\n\n..."
-                               "🎓 - Sênior\n🛠️ - Pleno\n⚙️ - Júnior\n☕ - Estagiário(a)\n🌱 - Trainee")
-    for emoji in LEVEL_EMOJI_ROLE_MAP:
+async def setup(ctx):  # quando o usuário digita "!setup"
+    # mensagem 1: função
+    level_msg = await ctx.send(
+        "Reaja para indicar seu nível de experiência:\n\n"
+        "🎓 - Sênior\n"
+        "🛠️ - Pleno\n"
+        "⚙️ - Júnior\n"
+        "☕ - Estagiário(a)\n"
+        "🌱 - Trainee"
+    )
+    for emoji in LEVEL_EMOJI_ROLE_MAP.keys():
         await level_msg.add_reaction(emoji)
+    print(f"ID da mensagem de função: {level_msg.id}")
 
-    area_msg = await ctx.send("Reaja para sua área de atuação:\n\n..."
-                              "🎲 - Engenharia de dados\n📊 - Analista de dados\n🧪 - Cientista de dados")
-    for emoji in AREA_EMOJI_ROLE_MAP:
+    # mensagem 2: área de atuação
+    area_msg = await ctx.send(
+        "Reaja para receber um cargo:\n\n"
+        "🎲 - Engenharia de dados\n"
+        "📊 - Analista de dados\n"
+        "🧪 - Cientista de dados"
+    )
+    for emoji in AREA_EMOJI_ROLE_MAP.keys():
         await area_msg.add_reaction(emoji)
-
-    # Salva os IDs dinamicamente
-    salvar_ids(level_msg.id, area_msg.id)
-
-    print(f"IDs salvos: função={level_msg.id}, área={area_msg.id}")
-
+    print(f"ID da mensagem de área: {area_msg.id}")
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    print("🟡 Evento de reação detectado")
-    print(f"Mensagem: {payload.message_id} | Emoji: {payload.emoji.name}")
     if payload.user_id == bot.user.id:
         return
 
@@ -93,12 +82,10 @@ async def on_raw_reaction_add(payload):
         return
 
     # detectando qual mensagem foi reagida
-    level_id, area_id = carregar_ids()
-    if payload.message_id == level_id:
+    if payload.message_id == LEVEL_ROLE_MESSAGE_ID:
         role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == area_id:
+    elif payload.message_id == AREA_ROLE_MESSAGE_ID:
         role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
-
     else:
         return
 
@@ -123,10 +110,9 @@ async def on_raw_reaction_remove(payload):
         return
 
     # detectando qual mensagem teve a reação removida
-    level_id, area_id = carregar_ids()
-    if payload.message_id == level_id:
+    if payload.message_id == LEVEL_ROLE_MESSAGE_ID:
         role_id = LEVEL_EMOJI_ROLE_MAP.get(str(payload.emoji))
-    elif payload.message_id == area_id:
+    elif payload.message_id == AREA_ROLE_MESSAGE_ID:
         role_id = AREA_EMOJI_ROLE_MAP.get(str(payload.emoji))
     else:
         return
